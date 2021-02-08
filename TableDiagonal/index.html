@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML表格對角線產生器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+        integrity="sha512-oc9+XSs1H243/FRN9Rw62Fn8EtxjEYWHXRvjS43YtueEewbS6ObfXcJNyohjHqVKFPoXXUxwc+q1K7Dee6vv9g=="
+        crossorigin="anonymous" />
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="py-4">
+    <div id="vm" v-cloak>
+        <div class="container">
+            <h3 class="text-center">HTML表格對角線產生器</h3>
+            <div class="row pt-2">
+                <div class="col-12 px-2 pb-2">
+                    <div class="form-inline justify-content-center">
+                        <label for="borderColor" class="mb-1 mr-sm-1">框線顏色</label>
+                        <input type="color" id="borderColor" v-model="borderColor" class="form-control mb-1 mr-sm-1"
+                            style="width: 100px;" placeholder="框線顏色" />
+                        <label for="backgroundColor" class="mb-1 mr-sm-1">背景顏色</label>
+                        <input type="color" id="backgroundColor" v-model="backgroundColor"
+                            class="form-control mb-1 mr-sm-1" style="width: 100px;" placeholder="背景顏色" />
+                        <label for="backgroundColor" class="mb-1 mr-sm-1">文字顏色</label>
+                        <input type="color" id="colo" v-model="color" class="form-control mb-1 mr-sm-1"
+                            style="width: 100px;" placeholder="文字顏色" />
+                    </div>
+                    <div class="form-inline justify-content-center">
+                        <label for="colTitle" class="mb-1 mr-sm-1">欄標題</label>
+                        <input type="text" id="colTitle" v-model="colTitle" class="form-control mb-1 mr-sm-1"
+                            placeholder="欄標題" />
+                        <label for="rowTitle" class="mb-1 mr-sm-1">列標題</label>
+                        <input type="text" id="rowTitle" v-model="rowTitle" class="form-control mb-1 mr-sm-1"
+                            placeholder="列標題" />
+                    </div>
+                    <fieldset class="form-inline justify-content-center">
+                        <label class="mb-1 mr-sm-1">方向：</label>
+                        <div class="form-check mb-1 mr-sm-1" v-for="direction in directions" :key="direction.value">
+                            <input class="form-check-input" type="checkbox" :id="'direction-' + direction.value"
+                                :value="direction.value" v-model="selectedDirections">
+                            <label class="form-check-label" :for="'direction-' + direction.value">
+                                {{ direction.name }}
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-lg border p-2">
+                    <h5>範例表格</h5>
+                    <div ref="sampleTableWrapper">
+                        <v-style>
+                            table.diagonal {
+                            width: 100%;
+                            border-collapse: collapse;
+                            }
+
+                            table.diagonal th,
+                            table.diagonal td {
+                            border: 1px solid {{ borderColor }};
+                            background: {{ backgroundColor }};
+                            color: {{ color }};
+                            text-align: center;
+                            padding: 5px;
+                            }
+                            <template v-if="selectedDirections.includes('top-left')">
+                                table.diagonal th.top-left {
+                                background: linear-gradient(to top right,
+                                {{backgroundColor}} 49.5%, {{borderColor}} 49.5%, {{borderColor}} 50.5%,
+                                {{backgroundColor}} 50.5%);
+                                }
+                                table.diagonal th.top-left > .col-title {
+                                text-align: right;
+                                }
+                                table.diagonal th.top-left > .row-title {
+                                text-align: left;
+                                }
+                            </template>
+                            <template v-if="selectedDirections.includes('top-right')">
+                                table.diagonal th.top-right {
+                                background: linear-gradient(to top left,
+                                {{backgroundColor}} 49.5%, {{borderColor}} 49.5%, {{borderColor}} 50.5%,
+                                {{backgroundColor}} 50.5%);
+                                }
+                                table.diagonal th.top-right > .col-title {
+                                text-align: left;
+                                }
+                                table.diagonal th.top-right > .row-title {
+                                text-align: right;
+                                }
+                            </template>
+                            <template v-if="selectedDirections.includes('bottom-left')">
+                                table.diagonal th.bottom-left {
+                                background: linear-gradient(to bottom right,
+                                {{backgroundColor}} 49.5%, {{borderColor}} 49.5%, {{borderColor}} 50.5%,
+                                {{backgroundColor}} 50.5%);
+                                }
+                                table.diagonal th.bottom-left > .col-title {
+                                text-align: right;
+                                }
+                                table.diagonal th.bottom-left > .row-title {
+                                text-align: left;
+                                }
+                            </template>
+                            <template v-if="selectedDirections.includes('bottom-right')">
+                                table.diagonal th.bottom-right {
+                                background: linear-gradient(to bottom left,
+                                {{backgroundColor}} 49.5%, {{borderColor}} 49.5%, {{borderColor}} 50.5%,
+                                {{backgroundColor}} 50.5%);
+                                }
+                                table.diagonal th.bottom-right > .col-title {
+                                text-align: left;
+                                }
+                                table.diagonal th.bottom-right > .row-title {
+                                text-align: right;
+                                }
+                            </template>
+                        </v-style>
+                        <table class="diagonal">
+                            <thead v-if="showTop">
+                                <tr>
+                                    <th class="top-left" v-if="selectedDirections.includes('top-left')">
+                                        <div class="col-title">{{ colTitle }}</div>
+                                        <div class="row-title">{{ rowTitle }}</div>
+                                    </th>
+                                    <th v-else-if="showLeft"></th>
+
+                                    <th v-for="seq in ['一', '二', '三']" :key="seq">星期{{ seq }}</th>
+
+                                    <th class="top-right" v-if="selectedDirections.includes('top-right')">
+                                        <div class="col-title">{{ colTitle }}</div>
+                                        <div class="row-title">{{ rowTitle }}</div>
+                                    </th>
+                                    <th v-else-if="showRight"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(x, i) in ['一', '二', '三']" :key="i">
+                                    <td v-if="showLeft">第{{ x }}節</td>
+                                    <td v-for="(y, j) in ['一', '二', '三']" :key="j">{{ subjects[i * 3 + j] }}</td>
+                                    <td v-if="showRight">第{{ x }}節</td>
+                                </tr>
+                            </tbody>
+                            <tfoot v-if="showBottom">
+                                <tr>
+                                    <th class="bottom-left" v-if="selectedDirections.includes('bottom-left')">
+                                        <div class="row-title">{{ rowTitle }}</div>
+                                        <div class="col-title">{{ colTitle }}</div>
+                                    </th>
+                                    <th v-else-if="showLeft"></th>
+
+                                    <th v-for="seq in ['一', '二', '三']" :key="seq">星期{{ seq }}</th>
+
+                                    <th class="bottom-right" v-if="selectedDirections.includes('bottom-right')">
+                                        <div class="row-title">{{ rowTitle }}</div>
+                                        <div class="col-title">{{ colTitle }}</div>
+                                    </th>
+                                    <th v-else-if="showRight"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg border p-2">
+                    <h5>範例HTML</h5>
+                    <textarea class="form-control" rows="17" :value="sampleHtml"></textarea>
+                </div>
+                <div class="col-12 px-2 pt-2 text-muted text-center">
+                    Wang, Jian-Zhong shared with <span class="text-danger">❤</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.includes"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.min.js"
+        integrity="sha512-BKbSR+cfyxLdMAsE0naLReFSLg8/pjbgfxHh/k/kUC82Hy7r6HtR5hLhobaln2gcTvzkyyehrdREdjpsQwy2Jw=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"
+        integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.13.5/beautify-html.min.js"
+        integrity="sha512-qS6IGDTTwNWL3OhDwdVUlaRNM29wPGstG7Kv49J989vrdCB4QMPWUOHdzaZYci04TwxQQRG15SuqK4NHeWhWlw=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.13.5/beautify-css.min.js"
+        integrity="sha512-oT9JS/HWsBSO2Azk/nyhZkQUJdP+U3MWnF/mVo55H9PqDFo9Qb3FJjRAtmfT9Gogz6ckhkKV5vBti8/gLiNEYg=="
+        crossorigin="anonymous"></script>
+    <script>
+        Vue.component('v-style', {
+            render: function (createElement) {
+                return createElement('style', this.$slots.default);
+            }
+        });
+
+        var vm = new Vue({
+            el: '#vm',
+
+            data: {
+                borderColor: '#cccccc',
+                backgroundColor: '#f3f3f3',
+                color: '#333333',
+                colTitle: '星期',
+                rowTitle: '節次',
+                directions: [
+                    { name: '左上', value: 'top-left' },
+                    { name: '右上', value: 'top-right' },
+                    { name: '左下', value: 'bottom-left' },
+                    { name: '右下', value: 'bottom-right' }
+                ],
+                selectedDirections: ['top-left'],
+                subjects: ['國文', '英文', '數學', '自然', '歷史', '地理', '公民', '體育', '音樂'],
+                sampleHtml: ''
+            },
+
+            computed: {
+                showTop: function () {
+                    return this.selectedDirections.includes('top-left') || this.selectedDirections.includes('top-right');
+                },
+
+                showBottom: function () {
+                    return this.selectedDirections.includes('bottom-left') || this.selectedDirections.includes('bottom-right');
+                },
+
+                showLeft: function () {
+                    return this.selectedDirections.includes('top-left') || this.selectedDirections.includes('bottom-left');
+                },
+
+                showRight: function () {
+                    return this.selectedDirections.includes('top-right') || this.selectedDirections.includes('bottom-right');
+                }
+            },
+
+            methods: {
+                updateSampleHtml: function () {
+                    var self = this;
+
+                    this.$nextTick(function () {
+                        var self = this;
+                        var sampleHtml = self.$refs.sampleTableWrapper.innerHTML.replace(/<!---->/g, '');
+                        self.sampleHtml = html_beautify(css_beautify(sampleHtml));
+                    });
+                }
+            },
+
+            created: function () {
+                this.debounced_updateSampleHtml = _.debounce(this.updateSampleHtml, 500);
+            },
+
+            mounted: function () {
+                var self = this;
+                var sampleHtml = self.$refs.sampleTableWrapper.innerHTML.replace(/<!---->/g, '');
+                self.sampleHtml = html_beautify(css_beautify(sampleHtml));
+            },
+
+            watch: {
+                borderColor: function () { this.updateSampleHtml(); },
+                backgroundColor: function () { this.updateSampleHtml(); },
+                color: function () { this.updateSampleHtml(); },
+                colTitle: function () { this.debounced_updateSampleHtml(); },
+                rowTitle: function () { this.debounced_updateSampleHtml(); },
+                selectedDirections: function () { this.updateSampleHtml(); }
+            }
+        });
+    </script>
+</body>
+
+</html>
