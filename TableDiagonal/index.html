@@ -244,7 +244,6 @@
                     var self = this;
 
                     this.$nextTick(function () {
-                        var self = this;
                         var sampleHtml = self.$refs.sampleTableWrapper.innerHTML.replace(/<!---->/g, '');
                         self.sampleHtml = html_beautify(css_beautify(sampleHtml));
                     });
@@ -257,6 +256,7 @@
 
             mounted: function () {
                 var self = this;
+                
                 var sampleHtml = self.$refs.sampleTableWrapper.innerHTML.replace(/<!---->/g, '');
                 self.sampleHtml = html_beautify(css_beautify(sampleHtml));
             },
